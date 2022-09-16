@@ -1,0 +1,330 @@
+---
+version: "2"
+services:
+  bazarr:
+    image: ghcr.io/linuxserver/bazarr
+    container_name: bazarr
+    environment:
+      - PUID=1026
+      - PGID=100
+      - TZ=Asia/Kuala_Lumpur
+    volumes:
+      - /volume1/docker/bazarr/config:/config:rw
+      - /volume1/Multimedia/Sorted/Movies:/movies:rw
+      - '/volume1/Multimedia/Sorted/TV Shows:/tv:rw'
+    network_mode: "bridge"
+    ports:
+      - 9094:6767
+    restart: unless-stopped
+
+#  calibre:
+#    image: linuxserver/calibre
+#    container_name: calibre
+#    environment:
+#      - PUID=1026
+#      - PGID=100
+#      - TZ=Asia/Kuala_Lumpur
+#      - CALIBRE_OVERRIDE_DATABASE_PATH=/db/metadata.db
+#      - GUAC_USER=abc #optional
+#      - GUAC_PASS=900150983cd24fb0d6963f7d28e17f72 #optional
+#      - UMASK_SET=022 #optional
+#    volumes:
+#      - /volume1/docker/calibre/config:/config:rw
+#      - /volume1/docker/calibre/config/db:/db:rw
+#      - '/volume1/Multimedia/Calibre Library:/books:rw'
+#      - /volume1/Downloads/eBooks:/downloads:rw
+#    network_mode: "bridge"
+#    ports:
+#      - 9092:8080
+#      - 9093:8081
+#    restart: unless-stopped
+
+  calibre-web:
+    image: linuxserver/calibre-web
+    container_name: calibre-web
+    hostname: calibre-web
+    environment:
+      - PUID=1026
+      - PGID=100
+      - TZ=Asia/Kuala_Lumpur
+      - DOCKER_MODS=linuxserver/calibre-web:calibre
+    volumes:
+      - '/volume1/Multimedia/Calibre Library:/books:rw'
+      - /volume1/docker/calibre-web/config:/config:rw
+    network_mode: "bridge"
+    ports:
+      - 0.0.0.0:9091:8083/tcp
+    restart: unless-stopped
+
+  heimdall:
+    image: linuxserver/heimdall
+    container_name: heimdall
+    hostname: heimdall
+    environment:
+      - PUID=1026
+      - PGID=100
+      - TZ=Asia/Kuala_Lumpur
+    volumes:
+      - /volume1/docker/heimdall/config:/config:rw
+    network_mode: "bridge"
+    ports:
+      - 0.0.0.0:9080:80
+#      - 0.0.0.0:9443:443
+    restart: unless-stopped
+
+  nzbhydra2:
+    image: linuxserver/nzbhydra2
+    container_name: nzbhydra2
+    hostname: nzbhydra2
+    environment:
+      - TZ=Asia/Kuala_Lumpur
+      - PGID=100
+      - PUID=1026
+    volumes:
+      - /volume1/Downloads/nzbs:/downloads:rw
+      - /volume1/docker/hydra2/config:/config:rw
+    network_mode: "bridge"
+    ports:
+      - 0.0.0.0:9084:5076/tcp
+    restart: unless-stopped
+
+  jackett:
+    image: linuxserver/jackett
+    container_name: jackett
+    hostname: jackett
+    environment:
+      - TZ=Asia/Kuala_Lumpur
+      - PGID=100
+      - PUID=1026
+    volumes:
+      - /volume1/Downloads/torrents:/downloads:rw
+      - /volume1/docker/jackett/config:/config:rw
+    network_mode: "bridge"
+    ports:
+      - 0.0.0.0:9085:9117/tcp
+    restart: unless-stopped
+
+#  lazylibrarian:
+#    image: linuxserver/lazylibrarian
+#    container_name: lazylibrarian
+#    hostname: lazylibrarian
+#    environment:
+#      - TZ=Asia/Kuala_Lumpur
+#      - PGID=100
+#      - PUID=1026
+#      - DOCKER_MODS=linuxserver/calibre-web:calibre #optional
+#    volumes:
+#      - '/volume1/Multimedia/Calibre Library:/books:rw'
+#      - /volume1/Downloads:/downloads:rw
+#      - /volume1/docker/lazylibrarian/config:/config:rw
+#    network_mode: "bridge"
+#    ports:
+#      - 0.0.0.0:9089:5299/tcp
+#    restart: unless-stopped
+
+  lidarr:
+    image: linuxserver/lidarr
+    container_name: lidarr
+    hostname: lidarr
+    environment:
+      - TZ=Asia/Kuala_Lumpur
+      - PGID=100
+      - PUID=1026
+#      - UMASK_SET=022 #optional
+    volumes:
+      - /volume1/Downloads:/downloads:rw
+      - /volume1/Multimedia/Sorted/Music:/music:rw
+      - /volume1/docker/lidarr/config:/config:rw
+    network_mode: "bridge"
+    ports:
+      - 0.0.0.0:9088:8686/tcp
+    restart: unless-stopped
+
+  ombi:
+    image: linuxserver/ombi
+    container_name: ombi
+    hostname: ombi
+    environment:
+      - TZ=Asia/Kuala_Lumpur
+      - PGID=100
+      - PUID=1026
+#      - BASE_URL=/ombi #optional
+    volumes:
+      - /volume1/docker/ombi/config:/config:rw
+    network_mode: "bridge"
+    ports:
+      - 0.0.0.0:9090:3579/tcp
+    restart: unless-stopped
+
+  # Commented out to test if macvlan works first
+  pihole:
+    image: pihole/pihole:latest     # Version 4.1 works with the required cap_add section
+    container_name: pihole01        # We name our container here
+    hostname: pihole01              # Containers hostname (optional)
+    domainname: qwertix.net         # Contaners domain (optional)
+    mac_address: d0:ca:ab:cd:ef:01  # Random MAC address (optional)
+    environment:                    # Optional environment configuration
+      TZ: Asia/Kuala_Lumpur
+      ServerIP: 10.0.1.50     # Change is this matches your NAS IP
+      WEBPASSWORD: “abc123”
+      VIRTUAL_HOST: pihole01.qwertix.net
+    volumes:
+       - '/volume1/docker/pihole01/pihole/:/etc/pihole/'
+       - '/volume1/docker/pihole01/dnsmasq.d/:/etc/dnsmasq.d/'
+    cap_add:
+      - NET_ADMIN                   # This is required for version 4.1 onwards
+    networks:
+      - macvlan_network              # Same name of network defined below
+    dns:
+      - 127.0.0.1
+      - 1.1.1.1
+    ports:
+      - 443/tcp
+      - 53/tcp
+      - 53/udp
+      - 67/udp
+      - 80/tcp
+    restart: unless-stopped         # Set container to always restart
+  
+  portainer:
+    image: portainer/portainer-ce
+    container_name: portainer
+    hostname: portainer
+    environment:
+      - TZ=Asia/Kuala_Lumpur
+      - PGID=100
+      - PUID=1026
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /volume1/docker/portainer/portainer_data:/data
+    network_mode: "bridge"
+    ports:
+      - 0.0.0.0:9000:9000/tcp
+      - 0.0.0.0:8000:8000/tcp
+    command: -H unix:///var/run/docker.sock
+    restart: always
+
+  qbittorrentvpn:
+    image: markusmcnugen/qbittorrentvpn
+    container_name: qbittorrentvpn
+    hostname: qbittorrentvpn
+    environment:
+      - VPN_PASSWORD=t84k30y4
+      - VPN_USERNAME=12015422@slickvpn.com
+      - DEBIAN_FRONTEND=noninteractive
+      - NAME_SERVERS=8.8.8.8,8.8.4.4
+      - LAN_NETWORK=10.0.2.0/24
+#      - VPN_ENABLED=yes
+      - VPN_ENABLED=no
+      - TZ=Asia/Kuala_Lumpur
+      - PGID=100
+      - PUID=1026
+      - WEBUI_PORT_ENV=9083
+#    privileged: true
+    volumes:
+      - /volume1/Downloads/torrents:/downloads/torrents:rw
+      - /volume1/Downloads/Series:/downloads/Series:rw
+      - /volume1/Downloads/Muzak:/downloads/Muzak:rw
+      - /volume1/Downloads/Movies:/downloads/Movies:rw
+      - /volume1/Downloads/eBooks:/downloads/eBooks:rw
+      - /volume1/Downloads:/downloads:rw
+      - /volume1/docker/qbittorrentvpn/config:/config:rw
+    network_mode: "bridge"
+    ports:
+      - 0.0.0.0::8999/tcp
+      - 0.0.0.0::8999/udp
+      - 0.0.0.0:9083:9083/tcp
+    restart: unless-stopped
+
+  radarr:
+    image: linuxserver/radarr
+    container_name: radarr
+    hostname: radarr
+    environment:
+      - TZ=Asia/Kuala_Lumpur
+      - PGID=100
+      - PUID=1026
+#      - UMASK_SET=022 #optional
+    volumes:
+      - /volume1/Downloads:/downloads:rw
+      - /volume1/Multimedia/Sorted/Movies:/movies:rw
+      - /volume1/docker/radarr/config:/config:rw
+    network_mode: "bridge"
+    ports:
+      - 0.0.0.0:9087:7878/tcp
+    restart: unless-stopped
+
+  sabnzbd:
+    image: linuxserver/sabnzbd
+    container_name: sabnzbd
+    hostname: sabnzbd
+    environment:
+      - TZ=Asia/Kuala_Lumpur
+      - PGID=100
+      - PUID=1026
+    volumes:
+      - /volume1/Downloads:/downloads:rw
+      - /volume1/docker/sabnzbd:/config:rw
+    network_mode: "bridge"
+    ports:
+      - 0.0.0.0:9082:8080/tcp
+    restart: unless-stopped
+
+  sonarr:
+    image: linuxserver/sonarr
+    container_name: sonarr
+    hostname: sonarr
+    environment:
+      - TZ=Asia/Kuala_Lumpur
+      - PGID=100
+      - PUID=1026
+#      - UMASK_SET=022 #optional
+    volumes:
+      - /volume1/Downloads:/downloads:rw
+      - '/volume1/Multimedia/Sorted/TV Shows:/tv:rw'
+      - /volume1/docker/sonarr/config:/config:rw
+    network_mode: "bridge"
+    ports:
+      - 0.0.0.0:9086:8989/tcp
+    restart: unless-stopped
+
+  tautulli:
+    image: linuxserver/tautulli
+    container_name: tautulli
+    hostname: tautulli
+    environment:
+      - PUID=1026
+      - PGID=100
+      - TZ=Asia/Kuala_Lumpur
+      - TAUTULLI_DOCKER=True
+    privileged: true
+    volumes:
+      - /volume1/docker/tautulli/config:/config:rw
+      - '/volume1/Plex/Library/Application Support/Plex Media Server/Logs:/logs:ro'
+    network_mode: "bridge"
+    ports:
+      - 0.0.0.0:9081:8181/tcp
+    restart: unless-stopped
+
+  watchtower:
+    image: v2tec/watchtower
+    container_name: watchtower
+    environment:
+      - TZ=Asia/Kuala_Lumpur
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    network_mode: "bridge"
+    command: --interval 1000 --cleanup
+    restart: unless-stopped
+
+networks:
+  macvlan_network:                      # Name of network
+    driver: macvlan                     # Use the macvlan network driver
+    driver_opts:
+      parent: eth0                      # If open vSwitch is disabled use eth0 (or eth1 +)
+    ipam:
+      config:
+        - subnet: 10.0.1.0/24           # Specify subnet
+          gateway: 10.0.1.254           # Gateway address
+          ip_range: 10.0.1.241/29        # Available IP addresses
+...

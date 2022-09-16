@@ -1,21 +1,21 @@
 ---
 version: "2"
 services:
-  bazarr:
-    image: ghcr.io/linuxserver/bazarr
-    container_name: bazarr
-    environment:
-      - PUID=1026
-      - PGID=100
-      - TZ=Asia/Kuala_Lumpur
-    volumes:
-      - /volume1/docker/bazarr/config:/config:rw
-      - /volume1/Multimedia/Sorted/Movies:/movies:rw
-      - '/volume1/Multimedia/Sorted/TV Shows:/tv:rw'
-    network_mode: "bridge"
-    ports:
-      - 9094:6767
-    restart: unless-stopped
+  #bazarr:
+    #image: ghcr.io/linuxserver/bazarr
+    #container_name: bazarr
+    #environment:
+      #- PUID=1026
+      #- PGID=100
+      #- TZ=Asia/Kuala_Lumpur
+    #volumes:
+      #- /volume1/docker/bazarr/config:/config:rw
+      #- /volume1/Multimedia/Sorted/Movies:/movies:rw
+      #- '/volume1/Multimedia/Sorted/TV Shows:/tv:rw'
+    #network_mode: "bridge"
+    #ports:
+      #- 9094:6767
+    #restart: unless-stopped
 
 #  calibre:
 #    image: linuxserver/calibre

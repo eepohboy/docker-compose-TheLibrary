@@ -1,0 +1,21 @@
+# List of Docker Services/Containers
+services:
+	bazarr
+	heimdall
+	nzbhydra2
+	jackett
+	ombi
+	pihole
+	portainer
+	qbittorrentvpn
+	radarr
+	sabnzbd
+	sonarr
+	tautulli
+	watchtower
+
+# Not critical
+services:
+	lidarr
+	calibre
+	calibre-web

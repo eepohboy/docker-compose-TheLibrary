@@ -209,8 +209,8 @@ services:
     container_name: qbittorrentvpn
     hostname: qbittorrentvpn
     environment:
-      - VPN_PASSWORD=t84k30y4
-      - VPN_USERNAME=12015422@slickvpn.com
+      - VPN_PASSWORD=<passowrd>
+      - VPN_USERNAME=<username>
       - DEBIAN_FRONTEND=noninteractive
       - NAME_SERVERS=8.8.8.8,8.8.4.4
       - LAN_NETWORK=10.0.2.0/24
